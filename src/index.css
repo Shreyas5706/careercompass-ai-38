@@ -1,0 +1,82 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 223 47% 11%;
+    --foreground: 0 0% 98%;
+
+    --card: 224 47% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 224 47% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 224 47% 20%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 224 47% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 224 47% 25%;
+    --input: 224 47% 25%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-primary text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-secondary text-ai-blue-900 font-semibold px-6 py-3 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200;
+  }
+  
+  .card-gradient {
+    @apply bg-gradient-card border border-ai-blue-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-ai-blue-200 rounded-lg focus:ring-2 focus:ring-ai-blue-500 focus:border-transparent transition-all duration-200 bg-white;
+  }
+  
+  .progress-bar {
+    @apply bg-ai-blue-100 rounded-full overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply bg-gradient-primary h-full transition-all duration-500 ease-out;
+  }
+}
