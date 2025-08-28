@@ -1,48 +1,153 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen, Target, Users, TrendingUp, Star, ChevronRight, Brain, Award, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, Target, Users, TrendingUp, Star, ChevronRight, Brain, Award, Zap, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { FeatureModal } from "@/components/FeatureModal";
+import { useState } from "react";
 
 export default function Index() {
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    setIsMobileMenuOpen(false);
+  };
+
+  const features = [
+    {
+      icon: Target,
+      title: "Career Path Finder",
+      description: "AI-powered career recommendations based on your skills, interests, and market trends.",
+      details: "Our advanced AI analyzes thousands of career paths and matches you with opportunities that align with your unique profile. We consider your educational background, skills, interests, and current market demand to provide personalized recommendations.",
+      benefits: [
+        "Personalized career matching using machine learning",
+        "Real-time market demand analysis",
+        "Skills gap identification",
+        "Educational pathway recommendations"
+      ],
+      ctaText: "Explore Careers"
+    },
+    {
+      icon: BookOpen,
+      title: "Skill Gap Analyzer",
+      description: "Identify missing skills and get personalized learning roadmaps to fill the gaps.",
+      details: "Compare your current skill set against industry requirements and receive a detailed roadmap to bridge any gaps. Our system tracks the latest industry trends and skill demands.",
+      benefits: [
+        "Comprehensive skill assessment",
+        "Industry-specific requirements analysis",
+        "Personalized learning paths",
+        "Progress tracking and milestones"
+      ],
+      ctaText: "Analyze Skills"
+    },
+    {
+      icon: Users,
+      title: "Mentorship Connect",
+      description: "Connect with industry professionals and mentors in your field of interest.",
+      details: "Access our network of verified industry professionals who are passionate about helping the next generation. Get matched with mentors based on your career goals and interests.",
+      benefits: [
+        "Verified industry professionals",
+        "Smart mentor matching",
+        "Structured mentorship programs",
+        "Regular progress check-ins"
+      ],
+      ctaText: "Find Mentors"
+    },
+    {
+      icon: TrendingUp,
+      title: "Job Market Insights",
+      description: "Real-time job market data and salary insights to help you make informed decisions.",
+      details: "Access comprehensive job market analytics including salary trends, skill demand, geographic opportunities, and future growth projections for your target career.",
+      benefits: [
+        "Real-time salary data",
+        "Job availability trends",
+        "Geographic opportunity mapping",
+        "Future market projections"
+      ],
+      ctaText: "View Insights"
+    }
+  ];
+
+  const handleFeatureClick = (feature: any) => {
+    setSelectedFeature(feature);
+    setIsModalOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Light Grid Background */}
-      <div className="fixed inset-0 bg-grid-pattern bg-[size:50px_50px] opacity-20 pointer-events-none"></div>
+      {/* Animated Grid Background */}
+      <div className="fixed inset-0 animated-grid opacity-20 pointer-events-none"></div>
       
       {/* Navigation */}
-      <nav className="relative z-10 container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <Brain className="w-5 h-5 text-white" />
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white icon-float" />
+              </div>
+              <span className="text-xl font-bold text-foreground">AI Career Advisor</span>
             </div>
-            <span className="text-xl font-bold text-foreground">AI Career Advisor</span>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex space-x-8">
+              <button onClick={() => scrollToSection('home')} className="nav-link">Home</button>
+              <button onClick={() => scrollToSection('features')} className="nav-link">Features</button>
+              <button onClick={() => scrollToSection('about')} className="nav-link">About</button>
+              <button onClick={() => scrollToSection('contact')} className="nav-link">Contact</button>
+            </div>
+
+            {/* Desktop CTA Buttons */}
+            <div className="hidden md:flex space-x-4">
+              <Link to="/login">
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="gradient">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button 
+              className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
-          <div className="hidden md:flex space-x-8">
-            <button onClick={() => scrollToSection('home')} className="text-foreground hover:text-primary transition-colors">Home</button>
-            <button onClick={() => scrollToSection('features')} className="text-foreground hover:text-primary transition-colors">Features</button>
-            <button onClick={() => scrollToSection('about')} className="text-foreground hover:text-primary transition-colors">About</button>
-            <button onClick={() => scrollToSection('contact')} className="text-foreground hover:text-primary transition-colors">Contact</button>
-          </div>
-          <div className="space-x-4">
-            <Link to="/login">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button className="bg-primary hover:bg-primary/90">
-                Get Started
-              </Button>
-            </Link>
-          </div>
+
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-lg border-b border-border animate-fade-in">
+              <div className="container mx-auto px-6 py-4 space-y-4">
+                <button onClick={() => scrollToSection('home')} className="block w-full text-left nav-link">Home</button>
+                <button onClick={() => scrollToSection('features')} className="block w-full text-left nav-link">Features</button>
+                <button onClick={() => scrollToSection('about')} className="block w-full text-left nav-link">About</button>
+                <button onClick={() => scrollToSection('contact')} className="block w-full text-left nav-link">Contact</button>
+                <div className="flex flex-col space-y-2 pt-4">
+                  <Link to="/login">
+                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button variant="gradient" className="w-full">
+                      Get Started
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -59,8 +164,9 @@ export default function Index() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
             <Link to="/register">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 py-4">
-                Get Started <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" variant="gradient" className="text-lg px-8 py-4 group">
+                Get Started 
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-4">
@@ -80,32 +186,15 @@ export default function Index() {
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            {
-              icon: Target,
-              title: "Career Path Finder",
-              description: "AI-powered career recommendations based on your skills, interests, and market trends."
-            },
-            {
-              icon: BookOpen,
-              title: "Skill Gap Analyzer",
-              description: "Identify missing skills and get personalized learning roadmaps to fill the gaps."
-            },
-            {
-              icon: Users,
-              title: "Mentorship Connect",
-              description: "Connect with industry professionals and mentors in your field of interest."
-            },
-            {
-              icon: TrendingUp,
-              title: "Job Market Insights",
-              description: "Real-time job market data and salary insights to help you make informed decisions."
-            }
-          ].map((feature, index) => (
-            <Card key={index} className="bg-card border-border hover:scale-105 transition-all duration-300 hover:border-primary/50">
+          {features.map((feature, index) => (
+            <Card 
+              key={index} 
+              className="feature-card bg-card border-border"
+              onClick={() => handleFeatureClick(feature)}
+            >
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="w-8 h-8 text-white" />
+                  <feature.icon className="w-8 h-8 text-white icon-float" />
                 </div>
                 <CardTitle className="text-card-foreground text-xl mb-2">{feature.title}</CardTitle>
               </CardHeader>
@@ -113,6 +202,11 @@ export default function Index() {
                 <CardDescription className="text-muted-foreground text-center leading-relaxed">
                   {feature.description}
                 </CardDescription>
+                <div className="text-center mt-4">
+                  <span className="text-primary text-sm font-medium hover:underline">
+                    Click to learn more →
+                  </span>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -126,21 +220,21 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-8 h-8 text-white" />
+                <Brain className="w-8 h-8 text-white icon-float" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">AI-Powered</h3>
               <p className="text-muted-foreground">Advanced machine learning algorithms analyze career trends and provide personalized recommendations.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-white" />
+                <Award className="w-8 h-8 text-white icon-float" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Expert Guidance</h3>
               <p className="text-muted-foreground">Connect with industry experts and mentors who provide real-world insights and career advice.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-white" />
+                <Zap className="w-8 h-8 text-white icon-float" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Instant Results</h3>
               <p className="text-muted-foreground">Get immediate feedback and recommendations to accelerate your career development journey.</p>
@@ -209,11 +303,12 @@ export default function Index() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4">
-                Start Your Journey <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 group hover:scale-105 transition-all duration-300">
+                Start Your Journey 
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4 hover:scale-105 transition-all duration-300">
               Learn More
             </Button>
           </div>
@@ -287,6 +382,15 @@ export default function Index() {
           </div>
         </div>
       </footer>
+
+      {/* Feature Modal */}
+      {selectedFeature && (
+        <FeatureModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          feature={selectedFeature}
+        />
+      )}
     </div>
   );
 }
