@@ -73,28 +73,15 @@ const Login = () => {
       {/* Left side - Inspiring image/content */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero text-white p-12 flex-col justify-center">
         <div className="max-w-md">
-          <Brain className="w-16 h-16 text-ai-gold-400 mb-6 animate-float" />
-          <h1 className="text-4xl font-bold mb-6">
-            Welcome Back to Your
-            <span className="text-ai-gold-400"> Career Journey</span>
+          <Brain className="w-16 h-16 text-[#7afffb] mb-6 animate-float" />
+          <h1 className="text-5xl font-bold mb-6">
+            Welcome Back <br />
+            <span className="text-[#7afffb] text-3xl">Continue Your Career Growth</span>
           </h1>
           <p className="text-xl text-ai-blue-100 mb-8">
-            Continue discovering your potential with AI-powered insights and personalized career guidance.
+            Keep progressing with AI-driven insights and personalized advice designed to help you reach your professional goals.
           </p>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-ai-gold-400 rounded-full"></div>
-              <span className="text-ai-blue-200">Track your progress</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-ai-gold-400 rounded-full"></div>
-              <span className="text-ai-blue-200">Connect with mentors</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-ai-gold-400 rounded-full"></div>
-              <span className="text-ai-blue-200">Discover new opportunities</span>
-            </div>
-          </div>
+         
         </div>
       </div>
 
