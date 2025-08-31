@@ -112,34 +112,15 @@ const Register = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Inspiring image/content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero text-white p-12 flex-col justify-center">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-primary text-white p-12 flex-col justify-center">
         <div className="max-w-md">
-          <Brain className="w-16 h-16 text-[#7afffb] mb-6 animate-float" />
           <h1 className="text-4xl font-bold mb-6">
             Begin Your 
-            <span className="text-[#7afffb]"> Future Today <br /></span>
+            <span className="text-white"> Future Today</span>
           </h1>
-          <p className="text-xl text-ai-blue-100 mb-8">
-            Join thousands of learners who’ve unlocked the path to a fulfilling career through intelligent guidance and support
+          <p className="text-xl text-white/90 mb-8">
+            Join thousands of students discovering their perfect career path through AI-powered guidance.
           </p>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <CheckCircle className="w-6 h-6 text-[#7afffb]" />
-              <span className="text-ai-blue-200">Tailored career pathways for every student</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <CheckCircle className="w-6 h-6 text-[#7afffb]" />
-              <span className="text-ai-blue-200">Skills assessment and strategic planning</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <CheckCircle className="w-6 h-6 text-[#7afffb]" />
-              <span className="text-ai-blue-200">Access to expert mentors in your field</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <CheckCircle className="w-6 h-6 text-[#7afffb]" />
-              <span className="text-ai-blue-200">Current industry trends and opportunities</span>
-            </div>
-          </div>
         </div>
       </div>
 

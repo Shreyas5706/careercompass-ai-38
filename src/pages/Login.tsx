@@ -70,25 +70,16 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Inspiring image/content */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 bg-gradient-hero text-white p-12 flex-col justify-center relative bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/lovable-uploads/8a067b4a-3188-4d12-b29f-624b4a1067f3.png)',
-        }}
-      >
-        {/* Overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/60"></div>
-        <div className="max-w-md relative z-10">
-          <Brain className="w-16 h-16 text-ai-gold-400 mb-6 animate-float" />
+      {/* Left side - Clean minimal sidebar */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-primary text-white p-12 flex-col justify-center">
+        <div className="max-w-md">
           <h1 className="text-4xl font-bold mb-6">
             Welcome Back to Your
-            <span className="text-ai-gold-400"> Career Journey</span>
+            <span className="text-white"> Career Journey</span>
           </h1>
-          <p className="text-xl text-ai-blue-100 mb-8">
-            Keep progressing with AI-driven insights and personalized advice designed to help you reach your professional goals.
+          <p className="text-xl text-white/90 mb-8">
+            Continue building your future with AI-powered career guidance and personalized insights.
           </p>
-         
         </div>
       </div>
 

@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen, Target, Users, TrendingUp, Star, ChevronRight, Brain, Award, Zap, Menu, X } from "lucide-react";
+import { ArrowRight, BookOpen, Target, Users, TrendingUp, Star, ChevronRight, Brain, Award, Zap, Menu, X, Lightbulb, Users2, Briefcase, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FeatureModal } from "@/components/FeatureModal";
+import HowItWorksSection from "@/components/HowItWorksSection";
 import { useState } from "react";
 
 export default function Index() {
@@ -185,25 +186,26 @@ export default function Index() {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Enhanced Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className="feature-card bg-card border-border"
+              className="feature-card bg-card border-border group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500"
               onClick={() => handleFeatureClick(feature)}
             >
               <CardHeader className="text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-8 h-8 text-white icon-float" />
                 </div>
-                <CardTitle className="text-card-foreground text-xl mb-2">{feature.title}</CardTitle>
+                <CardTitle className="text-card-foreground text-xl mb-2 group-hover:text-primary transition-colors duration-300">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-muted-foreground text-center leading-relaxed">
                   {feature.description}
                 </CardDescription>
                 <div className="text-center mt-4">
-                  <span className="text-primary text-sm font-medium hover:underline">
+                  <span className="text-primary text-sm font-medium hover:underline group-hover:translate-x-1 transition-transform duration-300 inline-block">
                     Click to learn more →
                   </span>
                 </div>
@@ -211,7 +213,62 @@ export default function Index() {
             </Card>
           ))}
         </div>
+
+        {/* Additional Enhanced Feature Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            {
+              icon: Lightbulb,
+              title: "Adaptive Learning Hub",
+              description: "Curated courses, interactive quizzes, and hands-on projects tailored to your learning pace and style.",
+              gradient: "from-yellow-500 to-orange-500"
+            },
+            {
+              icon: Users2,
+              title: "AI Interview Coach",
+              description: "Mock interviews with AI feedback, personalized tips to improve, and confidence-building exercises.",
+              gradient: "from-green-500 to-teal-500"
+            },
+            {
+              icon: Award,
+              title: "Achievement System",
+              description: "Earn certificates, badges, and build a comprehensive personal portfolio to showcase your skills.",
+              gradient: "from-purple-500 to-pink-500"
+            },
+            {
+              icon: GraduationCap,
+              title: "Scholarship Finder",
+              description: "Discover personalized scholarship matches and funding opportunities tailored to your profile.",
+              gradient: "from-blue-500 to-indigo-500"
+            }
+          ].map((feature, index) => (
+            <Card 
+              key={index} 
+              className="bg-card border-border group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 cursor-pointer"
+            >
+              <CardHeader className="text-center">
+                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <feature.icon className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-card-foreground text-xl mb-2 group-hover:text-primary transition-colors duration-300">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-muted-foreground text-center leading-relaxed">
+                  {feature.description}
+                </CardDescription>
+                <div className="text-center mt-4">
+                  <span className="text-primary text-sm font-medium hover:underline group-hover:translate-x-1 transition-transform duration-300 inline-block">
+                    Coming Soon →
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </section>
+
+      {/* How It Works Section */}
+      <HowItWorksSection />
 
       {/* About Section */}
       <section id="about" className="relative z-10 container mx-auto px-6 py-20">
