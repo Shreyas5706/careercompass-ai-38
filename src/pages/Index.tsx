@@ -89,10 +89,7 @@ export default function Index() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white icon-float" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AI Career Advisor</span>
+              <span className="text-xl font-bold text-foreground">CareerCompass</span>
             </div>
             
             {/* Desktop Navigation */}
@@ -155,10 +152,12 @@ export default function Index() {
       {/* Hero Section */}
       <section id="home" className="relative z-10 container mx-auto px-6 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in">
-            Personalized AI Career & 
-            <span className="bg-gradient-primary bg-clip-text text-transparent"> Skills Advisor</span>
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-2 animate-fade-in">
+            <span className="bg-gradient-primary bg-clip-text text-transparent">CareerCompass</span>
           </h1>
+          <p className="text-2xl text-muted-foreground mb-6 animate-fade-in">
+            CareerCompass — Personalized Career & Skills Advisor
+          </p>
           <p className="text-xl text-muted-foreground mb-8 leading-relaxed animate-fade-in">
             Empowering Students with AI-Powered Career Guidance. Discover your perfect career path, 
             identify skill gaps, and connect with mentors to accelerate your professional growth.
@@ -221,34 +220,59 @@ export default function Index() {
               icon: Lightbulb,
               title: "Adaptive Learning Hub",
               description: "Curated courses, interactive quizzes, and hands-on projects tailored to your learning pace and style.",
-              gradient: "from-yellow-500 to-orange-500"
+              details: "Access personalized learning paths with curated content from top educational platforms. Our AI adapts to your learning style and pace, ensuring optimal skill development.",
+              benefits: [
+                "Personalized learning paths",
+                "Interactive coding challenges",
+                "Progress tracking and analytics",
+                "Integration with popular learning platforms"
+              ]
             },
             {
               icon: Users2,
               title: "AI Interview Coach",
               description: "Mock interviews with AI feedback, personalized tips to improve, and confidence-building exercises.",
-              gradient: "from-green-500 to-teal-500"
+              details: "Practice with our AI-powered interview coach that provides real-time feedback on your responses, body language, and communication skills.",
+              benefits: [
+                "AI-powered mock interviews",
+                "Real-time feedback and tips",
+                "Industry-specific questions",
+                "Confidence building exercises"
+              ]
             },
             {
               icon: Award,
               title: "Achievement System",
               description: "Earn certificates, badges, and build a comprehensive personal portfolio to showcase your skills.",
-              gradient: "from-purple-500 to-pink-500"
+              details: "Track your progress and earn recognition for your achievements. Build a digital portfolio that showcases your skills to potential employers.",
+              benefits: [
+                "Digital certificates and badges",
+                "Portfolio builder",
+                "Skill verification",
+                "Social sharing capabilities"
+              ]
             },
             {
               icon: GraduationCap,
               title: "Scholarship Finder",
               description: "Discover personalized scholarship matches and funding opportunities tailored to your profile.",
-              gradient: "from-blue-500 to-indigo-500"
+              details: "Our AI matches you with relevant scholarships based on your academic performance, interests, and career goals. Never miss a funding opportunity again.",
+              benefits: [
+                "Personalized scholarship matching",
+                "Application deadline tracking",
+                "Essay guidance and tips",
+                "Success rate analytics"
+              ]
             }
           ].map((feature, index) => (
             <Card 
               key={index} 
               className="bg-card border-border group hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 cursor-pointer"
+              onClick={() => handleFeatureClick(feature)}
             >
               <CardHeader className="text-center">
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon className="w-8 h-8 text-white icon-float" />
                 </div>
                 <CardTitle className="text-card-foreground text-xl mb-2 group-hover:text-primary transition-colors duration-300">{feature.title}</CardTitle>
               </CardHeader>
@@ -257,9 +281,9 @@ export default function Index() {
                   {feature.description}
                 </CardDescription>
                 <div className="text-center mt-4">
-                  <span className="text-primary text-sm font-medium hover:underline group-hover:translate-x-1 transition-transform duration-300 inline-block">
-                    Coming Soon →
-                  </span>
+                  <Button variant="outline" size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    Click to learn more
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -277,7 +301,7 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-8 h-8 text-white icon-float" />
+                <Target className="w-8 h-8 text-white icon-float" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">AI-Powered</h3>
               <p className="text-muted-foreground">Advanced machine learning algorithms analyze career trends and provide personalized recommendations.</p>
