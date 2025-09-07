@@ -257,7 +257,7 @@ const Login = () => {
                     to="/register" 
                     className="text-blue-300 hover:text-blue-200 font-medium transition-colors"
                   >
-                    Contact admin
+                    Register now
                   </Link>
                 </div>
               </form>
