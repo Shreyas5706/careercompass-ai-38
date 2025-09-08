@@ -23,7 +23,10 @@ import {
   Phone,
   Mail,
   User,
-  Shield
+  Shield,
+  ChevronLeft,
+  ChevronRight,
+  Check
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -80,6 +83,7 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<RegistrationStep>(1);
+  const [selectedRole, setSelectedRole] = useState<UserRole | "">("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -124,26 +128,37 @@ const Register = () => {
   const roles = [
     { 
       id: "student" as UserRole, 
-      label: "Student", 
+      title: "Student",
       icon: GraduationCap,
       subtitle: "Quick & Easy Registration",
       description: "Access personalized career guidance and skill development tools"
     },
     { 
       id: "counselor" as UserRole, 
-      label: "Counselor", 
+      title: "Counselor",
       icon: Users,
       subtitle: "Professional Verification",
       description: "Help students discover their potential with AI-powered insights"
     },
     { 
       id: "admin" as UserRole, 
-      label: "Institute Admin", 
+      title: "Institute Admin",
       icon: Building,
       subtitle: "Full Control & Management",
       description: "Manage your institution's career guidance programs"
     }
   ];
+
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case 1: return "Role Selection";
+      case 2: return "Basic Information";
+      case 3: return "Role-Specific Details";
+      case 4: return "Document Upload";
+      case 5: return "Review & Submit";
+      default: return "";
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -177,7 +192,7 @@ const Register = () => {
 
   const passwordStrength = getPasswordStrength(formData.password);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -186,105 +201,47 @@ const Register = () => {
     }
   };
 
-  const handleRoleSelect = (role: UserRole) => {
-    setFormData(prev => ({ ...prev, role }));
-    setCurrentStep(2);
-  };
-
-  const validateStep = (step: RegistrationStep): boolean => {
-    const newErrors: {[key: string]: string} = {};
-    
-    switch (step) {
-      case 1:
-        if (!formData.role) {
-          newErrors.role = "Please select a role";
-        }
-        break;
-        
-      case 2:
-        if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-        if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
-        if (!formData.email) {
-          newErrors.email = "Email is required";
-        } else if (!validateEmail(formData.email)) {
-          newErrors.email = "Please enter a valid email address";
-        }
-        if (!formData.phone) {
-          newErrors.phone = "Phone number is required";
-        } else if (!validatePhone(formData.phone)) {
-          newErrors.phone = "Please enter a valid Indian phone number";
-        }
-        if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
-        if (!formData.gender) newErrors.gender = "Gender is required";
-        if (!formData.password) {
-          newErrors.password = "Password is required";
-        } else if (passwordStrength.score < 4) {
-          newErrors.password = "Password must meet all security requirements";
-        }
-        if (!formData.confirmPassword) {
-          newErrors.confirmPassword = "Please confirm your password";
-        } else if (formData.password !== formData.confirmPassword) {
-          newErrors.confirmPassword = "Passwords do not match";
-        }
-        break;
-        
-      case 3:
-        // Role-specific validation
-        if (formData.role === "student") {
-          if (!formData.currentGrade) newErrors.currentGrade = "Current grade is required";
-          if (!formData.institutionName) newErrors.institutionName = "Institution name is required";
-          if (!formData.parentName) newErrors.parentName = "Parent/Guardian name is required";
-          if (!formData.parentPhone) newErrors.parentPhone = "Parent/Guardian phone is required";
-        } else if (formData.role === "counselor") {
-          if (!formData.professionalTitle) newErrors.professionalTitle = "Professional title is required";
-          if (!formData.licenseNumber) newErrors.licenseNumber = "License number is required";
-          if (!formData.yearsExperience) newErrors.yearsExperience = "Years of experience is required";
-        } else if (formData.role === "admin") {
-          if (!formData.officialDesignation) newErrors.officialDesignation = "Official designation is required";
-          if (!formData.institutionRegNumber) newErrors.institutionRegNumber = "Institution registration number is required";
-          if (!formData.adminJustification) newErrors.adminJustification = "Admin access justification is required";
-        }
-        break;
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
+  const handleNext = () => {
+    if (canProceed()) {
       setCurrentStep(prev => (prev + 1) as RegistrationStep);
     }
   };
 
-  const prevStep = () => {
+  const handlePrevious = () => {
     setCurrentStep(prev => (prev - 1) as RegistrationStep);
   };
 
   const handleSubmit = async () => {
-    if (validateStep(currentStep)) {
-      setIsLoading(true);
-      
-      setTimeout(() => {
-        toast({
-          title: "Registration Successful!",
-          description: `Welcome to CareerCompass as a ${formData.role}. Your application is under review.`,
-        });
-        navigate('/dashboard');
-        setIsLoading(false);
-      }, 2000);
-    }
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      toast({
+        title: "Registration Successful!",
+        description: `Welcome to CareerCompass as a ${selectedRole}. Your application is under review.`,
+      });
+      navigate('/dashboard');
+      setIsLoading(false);
+    }, 2000);
   };
 
-  const getProgressPercentage = () => {
-    return (currentStep / 5) * 100;
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return selectedRole !== "";
+      case 2:
+        return formData.firstName && formData.lastName && formData.email && formData.phone && 
+               formData.dateOfBirth && formData.gender && formData.password && 
+               formData.confirmPassword && formData.password === formData.confirmPassword;
+      default:
+        return true;
+    }
   };
 
   const renderRoleSelection = () => (
     <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Choose Your Role</h2>
-        <p className="text-white/80 text-lg">Select the option that best describes you</p>
+      <div className="text-center mb-8">
+        <h3 className="text-3xl font-bold text-foreground mb-4">Choose Your Role</h3>
+        <p className="text-muted-foreground text-lg">Select the option that best describes you</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -293,20 +250,26 @@ const Register = () => {
           return (
             <button
               key={role.id}
-              onClick={() => handleRoleSelect(role.id)}
-              className="group relative p-8 rounded-2xl bg-white/8 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+              onClick={() => setSelectedRole(role.id)}
+              className={`relative p-8 rounded-2xl border-2 transition-all duration-300 cursor-pointer text-center ${
+                selectedRole === role.id
+                  ? 'bg-primary/20 border-primary/50 shadow-xl scale-105'
+                  : 'bg-card/50 border-border hover:bg-card hover:border-primary/30 hover:scale-102'
+              }`}
             >
-              <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                  <Icon className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">{role.label}</h3>
-                  <p className="text-blue-200 text-sm font-medium mb-3">{role.subtitle}</p>
-                  <p className="text-white/70 text-sm leading-relaxed">{role.description}</p>
-                </div>
+              <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                <Icon className="w-10 h-10 text-white" />
               </div>
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <h4 className="text-2xl font-bold text-foreground mb-2">{role.title}</h4>
+              <p className="text-primary text-lg mb-4">{role.subtitle}</p>
+              <p className="text-muted-foreground">{role.description}</p>
+              {selectedRole === role.id && (
+                <div className="absolute top-4 right-4">
+                  <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                    <Check className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+              )}
             </button>
           );
         })}
@@ -314,688 +277,325 @@ const Register = () => {
     </div>
   );
 
-  const renderBasicInformation = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Basic Information</h2>
-        <p className="text-white/70">Tell us about yourself</p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="text-white font-medium">First Name</Label>
-          <Input
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            placeholder="Enter your first name"
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-          />
-          {errors.firstName && (
-            <div className="flex items-center space-x-1 text-red-300 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{errors.firstName}</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <Label className="text-white font-medium">Last Name</Label>
-          <Input
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            placeholder="Enter your last name"
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-          />
-          {errors.lastName && (
-            <div className="flex items-center space-x-1 text-red-300 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{errors.lastName}</span>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label className="text-white font-medium">Email Address</Label>
-        <Input
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          placeholder="Enter your email address"
-          className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-        />
-        {errors.email && (
-          <div className="flex items-center space-x-1 text-red-300 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>{errors.email}</span>
-          </div>
-        )}
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="text-white font-medium">Phone Number</Label>
-          <Input
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            placeholder="+91 98765 43210"
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-          />
-          {errors.phone && (
-            <div className="flex items-center space-x-1 text-red-300 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{errors.phone}</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <Label className="text-white font-medium">Date of Birth</Label>
-          <Input
-            name="dateOfBirth"
-            type="date"
-            value={formData.dateOfBirth}
-            onChange={handleInputChange}
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-          />
-          {errors.dateOfBirth && (
-            <div className="flex items-center space-x-1 text-red-300 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{errors.dateOfBirth}</span>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label className="text-white font-medium">Gender</Label>
-        <RadioGroup value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-          <div className="flex space-x-6">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="male" id="male" className="border-white/30 text-white" />
-              <Label htmlFor="male" className="text-white">Male</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="female" id="female" className="border-white/30 text-white" />
-              <Label htmlFor="female" className="text-white">Female</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="other" id="other" className="border-white/30 text-white" />
-              <Label htmlFor="other" className="text-white">Other</Label>
-            </div>
-          </div>
-        </RadioGroup>
-        {errors.gender && (
-          <div className="flex items-center space-x-1 text-red-300 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>{errors.gender}</span>
-          </div>
-        )}
-      </div>
-      
-      <div className="space-y-2">
-        <Label className="text-white font-medium">Password</Label>
-        <div className="relative">
-          <Input
-            name="password"
-            type={showPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={handleInputChange}
-            placeholder="Create a strong password"
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20 pr-10"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 hover:bg-white/10"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff className="w-4 h-4 text-white/70" />
-            ) : (
-              <Eye className="w-4 h-4 text-white/70" />
-            )}
-          </Button>
-        </div>
-        
-        {formData.password && (
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-white/80">Password strength:</span>
-              <span className={`text-sm font-medium ${passwordStrength.color}`}>
-                {passwordStrength.strength}
-              </span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.bgColor}`} 
-                style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
-        
-        {errors.password && (
-          <div className="flex items-center space-x-1 text-red-300 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>{errors.password}</span>
-          </div>
-        )}
-      </div>
-      
-      <div className="space-y-2">
-        <Label className="text-white font-medium">Confirm Password</Label>
-        <div className="relative">
-          <Input
-            name="confirmPassword"
-            type={showConfirmPassword ? "text" : "password"}
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-            placeholder="Confirm your password"
-            className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20 pr-10"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 hover:bg-white/10"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? (
-              <EyeOff className="w-4 h-4 text-white/70" />
-            ) : (
-              <Eye className="w-4 h-4 text-white/70" />
-            )}
-          </Button>
-        </div>
-        {errors.confirmPassword && (
-          <div className="flex items-center space-x-1 text-red-300 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>{errors.confirmPassword}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const renderBasicInformation = () => {
+    const basicFields = [
+      { name: "firstName", label: "First Name", type: "text", placeholder: "Enter your first name" },
+      { name: "lastName", label: "Last Name", type: "text", placeholder: "Enter your last name" },
+      { name: "email", label: "Email Address", type: "email", placeholder: "Enter your email address" },
+      { name: "phone", label: "Phone Number", type: "tel", placeholder: "+91 98765 43210" },
+      { name: "dateOfBirth", label: "Date of Birth", type: "date", placeholder: "" },
+      { 
+        name: "gender", 
+        label: "Gender", 
+        type: "select", 
+        placeholder: "Select Gender",
+        options: ["Male", "Female", "Other", "Prefer not to say"]
+      }
+    ];
 
-  const renderRoleSpecificFields = () => {
-    if (formData.role === "student") {
-      return (
-        <div className="space-y-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Student Information</h2>
-            <p className="text-white/70">Tell us about your academic background</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Student ID (if any)</Label>
-              <Input
-                name="studentId"
-                value={formData.studentId}
-                onChange={handleInputChange}
-                placeholder="Enter your student ID"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Current Grade/Class/Year</Label>
-              <Input
-                name="currentGrade"
-                value={formData.currentGrade}
-                onChange={handleInputChange}
-                placeholder="e.g., Grade 12, 2nd Year B.Tech"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.currentGrade && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h3 className="text-3xl font-bold text-foreground mb-4">Basic Information</h3>
+          <p className="text-muted-foreground">Tell us a bit about yourself</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {basicFields.map((field) => (
+            <div key={field.name} className="space-y-2">
+              <Label htmlFor={field.name} className="text-foreground font-medium">{field.label}</Label>
+              {field.type === 'select' ? (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name as keyof typeof formData] as string}
+                  onChange={handleInputChange}
+                  className={`w-full input-field ${
+                    errors[field.name] ? 'border-destructive' : ''
+                  }`}
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.options?.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              ) : field.type === 'date' ? (
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  type="date"
+                  value={formData[field.name as keyof typeof formData] as string}
+                  onChange={handleInputChange}
+                  className={`input-field ${
+                    errors[field.name] ? 'border-destructive' : ''
+                  }`}
+                />
+              ) : (
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={formData[field.name as keyof typeof formData] as string}
+                  onChange={handleInputChange}
+                  className={`input-field ${
+                    errors[field.name] ? 'border-destructive' : ''
+                  }`}
+                />
+              )}
+              {errors[field.name] && (
+                <div className="flex items-center space-x-1 text-destructive text-sm">
                   <AlertCircle className="w-4 h-4" />
-                  <span>{errors.currentGrade}</span>
+                  <span>{errors[field.name]}</span>
                 </div>
               )}
             </div>
-          </div>
-          
+          ))}
+        </div>
+
+        {/* Password Fields */}
+        <div className="space-y-6">
           <div className="space-y-2">
-            <Label className="text-white font-medium">Institution Name</Label>
-            <Input
-              name="institutionName"
-              value={formData.institutionName}
-              onChange={handleInputChange}
-              placeholder="Enter your school/college name"
-              className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-            />
-            {errors.institutionName && (
-              <div className="flex items-center space-x-1 text-red-300 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                <span>{errors.institutionName}</span>
+            <Label className="text-foreground font-medium">Password</Label>
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Create a strong password"
+                className="input-field pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 hover:bg-muted/20"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="w-4 h-4 text-muted-foreground" />
+                )}
+              </Button>
+            </div>
+            
+            {formData.password && (
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">Password strength:</span>
+                  <span className={`text-sm font-medium ${passwordStrength.color}`}>
+                    {passwordStrength.strength}
+                  </span>
+                </div>
+                <div className="w-full bg-border rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.bgColor}`} 
+                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                  />
+                </div>
               </div>
             )}
           </div>
-          
+
           <div className="space-y-2">
-            <Label className="text-white font-medium">Academic Program/Stream</Label>
-            <Input
-              name="academicProgram"
-              value={formData.academicProgram}
-              onChange={handleInputChange}
-              placeholder="e.g., Science, Commerce, Engineering"
-              className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-            />
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Parent/Guardian Information</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-white font-medium">Parent/Guardian Name</Label>
-                <Input
-                  name="parentName"
-                  value={formData.parentName}
-                  onChange={handleInputChange}
-                  placeholder="Enter parent/guardian name"
-                  className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-                />
-                {errors.parentName && (
-                  <div className="flex items-center space-x-1 text-red-300 text-sm">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{errors.parentName}</span>
-                  </div>
+            <Label className="text-foreground font-medium">Confirm Password</Label>
+            <div className="relative">
+              <Input
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                placeholder="Confirm your password"
+                className="input-field pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 hover:bg-muted/20"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="w-4 h-4 text-muted-foreground" />
                 )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-white font-medium">Parent/Guardian Phone</Label>
-                <Input
-                  name="parentPhone"
-                  value={formData.parentPhone}
-                  onChange={handleInputChange}
-                  placeholder="+91 98765 43210"
-                  className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-                />
-                {errors.parentPhone && (
-                  <div className="flex items-center space-x-1 text-red-300 text-sm">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{errors.parentPhone}</span>
-                  </div>
-                )}
-              </div>
+              </Button>
             </div>
-          </div>
-        </div>
-      );
-    }
-    
-    if (formData.role === "counselor") {
-      return (
-        <div className="space-y-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Professional Information</h2>
-            <p className="text-white/70">Tell us about your professional background</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Professional Title</Label>
-              <Input
-                name="professionalTitle"
-                value={formData.professionalTitle}
-                onChange={handleInputChange}
-                placeholder="e.g., Career Counselor, Psychologist"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.professionalTitle && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.professionalTitle}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-white font-medium">License Number</Label>
-              <Input
-                name="licenseNumber"
-                value={formData.licenseNumber}
-                onChange={handleInputChange}
-                placeholder="Enter your professional license number"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.licenseNumber && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.licenseNumber}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Years of Experience</Label>
-              <Input
-                name="yearsExperience"
-                value={formData.yearsExperience}
-                onChange={handleInputChange}
-                placeholder="e.g., 5 years"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.yearsExperience && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.yearsExperience}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Current Organization</Label>
-              <Input
-                name="currentOrganization"
-                value={formData.currentOrganization}
-                onChange={handleInputChange}
-                placeholder="Enter your current workplace"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label className="text-white font-medium">Highest Qualification</Label>
-            <Input
-              name="highestQualification"
-              value={formData.highestQualification}
-              onChange={handleInputChange}
-              placeholder="e.g., M.A. Psychology, Ph.D. Education"
-              className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-            />
-          </div>
-        </div>
-      );
-    }
-    
-    if (formData.role === "admin") {
-      return (
-        <div className="space-y-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Administrative Information</h2>
-            <p className="text-white/70">Verify your administrative credentials</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Official Designation</Label>
-              <Input
-                name="officialDesignation"
-                value={formData.officialDesignation}
-                onChange={handleInputChange}
-                placeholder="e.g., Principal, Director, Dean"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.officialDesignation && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.officialDesignation}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-white font-medium">Institution Registration Number</Label>
-              <Input
-                name="institutionRegNumber"
-                value={formData.institutionRegNumber}
-                onChange={handleInputChange}
-                placeholder="Enter institution registration number"
-                className="bg-white/10 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20"
-              />
-              {errors.institutionRegNumber && (
-                <div className="flex items-center space-x-1 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.institutionRegNumber}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label className="text-white font-medium">Institution Type</Label>
-            <RadioGroup value={formData.institutionType} onValueChange={(value) => setFormData(prev => ({ ...prev, institutionType: value }))}>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {["School", "College", "University", "Training Center"].map((type) => (
-                  <div key={type} className="flex items-center space-x-2">
-                    <RadioGroupItem value={type.toLowerCase()} id={type} className="border-white/30 text-white" />
-                    <Label htmlFor={type} className="text-white">{type}</Label>
-                  </div>
-                ))}
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <div className="space-y-2">
-            <Label className="text-white font-medium">Admin Access Justification</Label>
-            <textarea
-              name="adminJustification"
-              value={formData.adminJustification}
-              onChange={handleInputChange}
-              placeholder="Please explain why you need administrative access to CareerCompass..."
-              rows={4}
-              className="w-full bg-white/10 backdrop-blur border border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20 rounded-lg px-3 py-2 resize-none"
-            />
-            {errors.adminJustification && (
-              <div className="flex items-center space-x-1 text-red-300 text-sm">
+            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <div className="flex items-center space-x-1 text-destructive text-sm">
                 <AlertCircle className="w-4 h-4" />
-                <span>{errors.adminJustification}</span>
+                <span>Passwords do not match</span>
               </div>
             )}
           </div>
         </div>
-      );
-    }
-    
-    return null;
+      </div>
+    );
   };
-
-  const renderDocumentUpload = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Document Upload</h2>
-        <p className="text-white/70">Upload required documents for verification</p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white/5 rounded-xl p-6 border-2 border-dashed border-white/30 hover:border-white/50 transition-colors cursor-pointer">
-          <div className="text-center space-y-4">
-            <Upload className="w-12 h-12 text-white/70 mx-auto" />
-            <div>
-              <h3 className="text-white font-medium">Photo ID</h3>
-              <p className="text-white/60 text-sm">Aadhaar, Passport, or Driver's License</p>
-            </div>
-            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
-              Choose File
-            </Button>
-          </div>
-        </div>
-        
-        <div className="bg-white/5 rounded-xl p-6 border-2 border-dashed border-white/30 hover:border-white/50 transition-colors cursor-pointer">
-          <div className="text-center space-y-4">
-            <FileText className="w-12 h-12 text-white/70 mx-auto" />
-            <div>
-              <h3 className="text-white font-medium">Academic Certificate</h3>
-              <p className="text-white/60 text-sm">Latest academic transcript or certificate</p>
-            </div>
-            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
-              Choose File
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderReview = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Review & Submit</h2>
-        <p className="text-white/70">Please review your information before submitting</p>
-      </div>
-      
-      <div className="bg-white/5 rounded-xl p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-white">Registration Summary</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-white/70">Role:</span>
-            <span className="text-white ml-2 capitalize">{formData.role}</span>
-          </div>
-          <div>
-            <span className="text-white/70">Name:</span>
-            <span className="text-white ml-2">{formData.firstName} {formData.lastName}</span>
-          </div>
-          <div>
-            <span className="text-white/70">Email:</span>
-            <span className="text-white ml-2">{formData.email}</span>
-          </div>
-          <div>
-            <span className="text-white/70">Phone:</span>
-            <span className="text-white ml-2">{formData.phone}</span>
-          </div>
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id="terms"
-            className="w-4 h-4 text-blue-400 border-white/30 rounded focus:ring-blue-400/20 bg-white/10"
-          />
-          <Label htmlFor="terms" className="text-white/90">
-            I agree to the Terms & Conditions and Privacy Policy
-          </Label>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id="consent"
-            className="w-4 h-4 text-blue-400 border-white/30 rounded focus:ring-blue-400/20 bg-white/10"
-          />
-          <Label htmlFor="consent" className="text-white/90">
-            I consent to the processing of my personal data for career guidance services
-          </Label>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1: return renderRoleSelection();
-      case 2: return renderBasicInformation();
-      case 3: return renderRoleSpecificFields();
-      case 4: return renderDocumentUpload();
-      case 5: return renderReview();
-      default: return renderRoleSelection();
+      case 1:
+        return renderRoleSelection();
+      case 2:
+        return renderBasicInformation();
+      case 3:
+        return (
+          <div className="text-center py-16">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Role-Specific Information</h3>
+            <p className="text-muted-foreground">This section will be completed based on your selected role</p>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="text-center py-16">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Document Upload</h3>
+            <p className="text-muted-foreground">Upload required documents for verification</p>
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground mb-4">Review & Submit</h3>
+              <p className="text-muted-foreground">Please review your information before submitting</p>
+            </div>
+            
+            <div className="bg-card rounded-xl p-6 space-y-4">
+              <h4 className="text-lg font-semibold text-foreground">Registration Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Role:</span>
+                  <span className="text-foreground ml-2 capitalize">{selectedRole}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Name:</span>
+                  <span className="text-foreground ml-2">{formData.firstName} {formData.lastName}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Email:</span>
+                  <span className="text-foreground ml-2">{formData.email}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Phone:</span>
+                  <span className="text-foreground ml-2">{formData.phone}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-primary/20 bg-card"
+                />
+                <Label htmlFor="terms" className="text-foreground">
+                  I agree to the Terms & Conditions and Privacy Policy
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="consent"
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-primary/20 bg-card"
+                />
+                <Label htmlFor="consent" className="text-foreground">
+                  I consent to the processing of my personal data for career guidance services
+                </Label>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1a237e] via-[#3949ab] to-[#6a1b9a]" />
-      
-      {/* Floating Particles */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="fixed inset-0 animated-grid opacity-20 pointer-events-none"></div>
 
-      <div className="relative z-10 min-h-screen">
+      <div className="relative z-10 min-h-screen container mx-auto px-6 py-8">
         {/* Header */}
-        <div className="text-center pt-8 pb-6">
-          <div className="flex justify-center items-center space-x-3 mb-4">
-            <Clock className="w-8 h-8 text-white/80" />
-            <h1 className="text-3xl font-bold text-white">Create Your Account</h1>
-          </div>
-          <p className="text-white/80">Join CareerCompass and start your personalized career journey</p>
+        <div className="text-center mb-8">
+          <Clock className="w-16 h-16 text-primary mx-auto mb-6 animate-pulse icon-float" />
+          <h1 className="text-4xl font-bold text-foreground mb-2">
+            Create Your <span className="bg-gradient-primary bg-clip-text text-transparent">CareerCompass</span> Account
+          </h1>
+          <p className="text-muted-foreground text-lg">Join thousands of students discovering their perfect career path</p>
         </div>
 
-        {/* Progress Bar */}
-        {currentStep > 1 && (
-          <div className="max-w-2xl mx-auto px-8 mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-white/70 text-sm">Step {currentStep} of 5</span>
-              <span className="text-white/70 text-sm">{Math.round(getProgressPercentage())}% Complete</span>
+        {/* Main Container */}
+        <div className="max-w-5xl mx-auto">
+          {/* Glassmorphism Card */}
+          <div className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-2xl">
+            {/* Progress Indicator */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-foreground">Step {currentStep} of 5</h2>
+                <span className="text-muted-foreground text-sm">{getStepTitle()}</span>
+              </div>
+              <Progress value={(currentStep / 5) * 100} className="h-3 bg-border">
+                <div className="h-full bg-gradient-primary rounded-full transition-all duration-500" 
+                     style={{ width: `${(currentStep / 5) * 100}%` }} />
+              </Progress>
             </div>
-            <Progress value={getProgressPercentage()} className="h-2 bg-white/20" />
-          </div>
-        )}
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-8 pb-8">
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl">
+            {/* Step Content */}
             {renderStepContent()}
-            
+
             {/* Navigation Buttons */}
-            {currentStep > 1 && (
-              <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/20">
-                <Button
-                  onClick={prevStep}
+            <div className="flex justify-between mt-8">
+              {currentStep > 1 && (
+                <Button 
+                  onClick={handlePrevious}
                   variant="outline"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  className="border-border text-foreground hover:bg-muted"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ChevronLeft className="w-4 h-4 mr-2" />
                   Previous
                 </Button>
-                
+              )}
+              
+              <div className={currentStep === 1 ? "ml-auto" : ""}>
                 {currentStep < 5 ? (
-                  <Button
-                    onClick={nextStep}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  <Button 
+                    onClick={handleNext}
+                    variant="gradient"
+                    disabled={!canProceed()}
                   >
                     Next
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 ) : (
-                  <Button
+                  <Button 
                     onClick={handleSubmit}
-                    disabled={isLoading}
-                    className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white"
+                    variant="gradient"
+                    disabled={isLoading || !canProceed()}
                   >
-                    {isLoading ? "Submitting..." : "Submit Application"}
+                    {isLoading ? "Creating Account..." : "Create Account"}
                   </Button>
                 )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="text-center pb-8">
-          <span className="text-white/70">Already have an account? </span>
-          <Link 
-            to="/login" 
-            className="text-blue-300 hover:text-blue-200 font-medium transition-colors"
-          >
-            Sign in here
-          </Link>
+          {/* Back to Login */}
+          <div className="text-center mt-8">
+            <span className="text-muted-foreground">Already have an account? </span>
+            <Link 
+              to="/login" 
+              className="text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              Sign in here
+            </Link>
+          </div>
         </div>
       </div>
     </div>

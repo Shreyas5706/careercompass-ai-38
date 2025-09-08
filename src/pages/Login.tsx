@@ -82,40 +82,24 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1a237e] via-[#3949ab] to-[#6a1b9a]" />
-      
-      {/* Floating Particles */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="fixed inset-0 animated-grid opacity-20 pointer-events-none"></div>
 
       <div className="relative z-10 min-h-screen flex">
         {/* Left Section - Branding */}
         <div className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-center items-center text-center">
-          <div className="max-w-md text-white">
+          <div className="max-w-md text-foreground">
             <div className="mb-8 flex justify-center">
-              <Clock className="w-16 h-16 text-white/80 animate-pulse" />
+              <Clock className="w-16 h-16 text-primary animate-pulse icon-float" />
             </div>
             <h1 className="text-5xl font-bold mb-6 leading-tight">
               Welcome to<br />
-              <span className="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
                 CareerCompass
               </span>
             </h1>
-            <p className="text-xl text-white/90 leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Select your role to access your personalized dashboard and unlock AI-powered career guidance
             </p>
           </div>
@@ -125,12 +109,12 @@ const Login = () => {
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             {/* Glassmorphism Card */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl">
+            <div className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-2xl">
               {/* Mobile Branding */}
               <div className="lg:hidden text-center mb-8">
-                <Clock className="w-12 h-12 text-white/80 mx-auto mb-4" />
-                <h1 className="text-3xl font-bold text-white mb-2">CareerCompass</h1>
-                <p className="text-white/80">Select your role to continue</p>
+                <Clock className="w-12 h-12 text-primary mx-auto mb-4 icon-float" />
+                <h1 className="text-3xl font-bold text-foreground mb-2">CareerCompass</h1>
+                <p className="text-muted-foreground">Select your role to continue</p>
               </div>
 
               {/* Role Selection */}
@@ -144,14 +128,14 @@ const Login = () => {
                         onClick={() => setSelectedRole(role.id)}
                         className={`relative p-4 rounded-xl border transition-all duration-300 ${
                           selectedRole === role.id
-                            ? 'bg-white/20 border-white/40 shadow-lg scale-105'
-                            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                            ? 'bg-primary/20 border-primary/40 shadow-lg scale-105'
+                            : 'bg-card/50 border-border hover:bg-card hover:border-primary/20'
                         }`}
                       >
-                        <Icon className="w-6 h-6 text-white mx-auto mb-2" />
-                        <span className="text-white text-sm font-medium block">{role.label}</span>
+                        <Icon className="w-6 h-6 text-foreground mx-auto mb-2" />
+                        <span className="text-foreground text-sm font-medium block">{role.label}</span>
                         {selectedRole === role.id && (
-                          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-purple-400/20 pointer-events-none" />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-primary/20 pointer-events-none" />
                         )}
                       </button>
                     );
@@ -161,14 +145,14 @@ const Login = () => {
 
               {/* Dynamic Form Header */}
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">{getRoleTitle()}</h2>
-                <p className="text-white/70">Enter your credentials to access your dashboard</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">{getRoleTitle()}</h2>
+                <p className="text-muted-foreground">Enter your credentials to access your dashboard</p>
               </div>
 
               {/* Login Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white font-medium">Email Address</Label>
+                  <Label htmlFor="email" className="text-foreground font-medium">Email Address</Label>
                   <Input
                     id="email"
                     name="email"
@@ -176,12 +160,12 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`bg-white/15 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20 ${
-                      errors.email ? 'border-red-400' : ''
+                    className={`input-field ${
+                      errors.email ? 'border-destructive' : ''
                     }`}
                   />
                   {errors.email && (
-                    <div className="flex items-center space-x-1 text-red-300 text-sm">
+                    <div className="flex items-center space-x-1 text-destructive text-sm">
                       <AlertCircle className="w-4 h-4" />
                       <span>{errors.email}</span>
                     </div>
@@ -189,7 +173,7 @@ const Login = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white font-medium">Password</Label>
+                  <Label htmlFor="password" className="text-foreground font-medium">Password</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -198,26 +182,26 @@ const Login = () => {
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className={`bg-white/15 backdrop-blur border-white/30 text-white placeholder:text-white/50 focus:border-white/50 focus:ring-white/20 pr-10 ${
-                        errors.password ? 'border-red-400' : ''
+                      className={`input-field pr-10 ${
+                        errors.password ? 'border-destructive' : ''
                       }`}
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-white/10"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-muted/20"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="w-4 h-4 text-white/70" />
+                        <EyeOff className="w-4 h-4 text-muted-foreground" />
                       ) : (
-                        <Eye className="w-4 h-4 text-white/70" />
+                        <Eye className="w-4 h-4 text-muted-foreground" />
                       )}
                     </Button>
                   </div>
                   {errors.password && (
-                    <div className="flex items-center space-x-1 text-red-300 text-sm">
+                    <div className="flex items-center space-x-1 text-destructive text-sm">
                       <AlertCircle className="w-4 h-4" />
                       <span>{errors.password}</span>
                     </div>
@@ -229,15 +213,15 @@ const Login = () => {
                     <input
                       id="remember"
                       type="checkbox"
-                      className="w-4 h-4 text-blue-400 border-white/30 rounded focus:ring-blue-400/20 bg-white/10"
+                      className="w-4 h-4 text-primary border-border rounded focus:ring-primary/20 bg-card"
                     />
-                    <Label htmlFor="remember" className="text-sm text-white/80">
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground">
                       Remember me
                     </Label>
                   </div>
                   <Link 
                     to="#" 
-                    className="text-sm text-blue-300 hover:text-blue-200 font-medium transition-colors"
+                    className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -245,17 +229,18 @@ const Login = () => {
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  variant="gradient"
+                  className="w-full font-medium py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   disabled={isLoading}
                 >
                   {isLoading ? "Signing In..." : "Sign In to Dashboard"}
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-white/70">Don't have an account? </span>
+                  <span className="text-muted-foreground">Don't have an account? </span>
                   <Link 
                     to="/register" 
-                    className="text-blue-300 hover:text-blue-200 font-medium transition-colors"
+                    className="text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     Register now
                   </Link>
